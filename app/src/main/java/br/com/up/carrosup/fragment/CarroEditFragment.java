@@ -18,10 +18,13 @@ import com.google.android.gms.location.LocationListener;
 
 import org.parceler.Parcels;
 
+import java.io.File;
+
 import br.com.up.carrosup.R;
 import br.com.up.carrosup.activity.CarroActivity;
 import br.com.up.carrosup.domain.Carro;
 import br.com.up.carrosup.domain.CarroService;
+import br.com.up.carrosup.rest.ResponseWithURL;
 import br.com.up.carrosup.utils.BroadcastUtil;
 import br.com.up.carrosup.utils.CameraUtil;
 import livroandroid.lib.utils.GooglePlayServicesHelper;
@@ -133,6 +136,16 @@ public class CarroEditFragment extends CarroFragment implements LocationListener
         return new BaseTask() {
             @Override
             public Object execute() throws Exception {
+                // Upload da foto
+                File file = camera.getFile();
+                if (file != null) {
+                    ResponseWithURL response = CarroService.postFotoBase64(getContext(), file);
+                    if (response != null && response.isOk()) {
+                        // Atualiza a foto do carro
+                        carro.urlFoto = response.getUrl();
+                    }
+                }
+                // Salva o carro
                 CarroService.save(getContext(), carro);
                 // Envia mensagem para lista de carros.
                 Intent intent = new Intent(BroadcastUtil.ACTION_CARRO_SALVO);
@@ -140,6 +153,9 @@ public class CarroEditFragment extends CarroFragment implements LocationListener
                 BroadcastUtil.broadcast(getContext(), intent);
                 getActivity().finish();
                 return null;
+            }
+            @Override
+            public void updateView(Object object) {
             }
         };
     }
