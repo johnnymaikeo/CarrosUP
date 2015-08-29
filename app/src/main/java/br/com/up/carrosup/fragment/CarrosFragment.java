@@ -252,7 +252,6 @@ public class CarrosFragment extends BaseFragment {
             }
         }
     }
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_frag_carros, menu);
